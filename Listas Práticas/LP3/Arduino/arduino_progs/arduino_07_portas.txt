@@ -8,7 +8,7 @@ void setup() {
         pinMode(led1,OUTPUT);
         }
 void loop() {
-                if (Serial.available() > 0) {
+                if (Serial.available() > 0) {x
                 entrada1 = Serial.parseInt();
                 entrada2 = Serial.parseInt();
 
