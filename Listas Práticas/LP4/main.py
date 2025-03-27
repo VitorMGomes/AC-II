@@ -1,67 +1,59 @@
-def expressao(mnemonico):
-    if mnemonico == "umL":
-        return '0'
-    elif mnemonico == "AonB":
-        return '1'
-    elif mnemonico == "copiaA":
-        return '2'
-    elif mnemonico == "nAxnB":
-        return '3'
-    elif mnemonico == "AeBn":
-        return '4'
-    elif mnemonico == "nA":
-        return '5'
-    elif mnemonico == "AenB":
-        return '6'
-    elif mnemonico == "nAonB":
-        return '7'
-    elif mnemonico == "AxB":
-        return '8'
-    elif mnemonico == "zeroL":
-        return '9'
-    elif mnemonico == "copiaB":
-        return 'A'
-    elif mnemonico == "AeB":
-        return 'B'
-    elif mnemonico == "nB":
-        return 'C'
-    elif mnemonico == "nAeBn":
-        return 'D'
-    elif mnemonico == "AoB":
-        return 'E'
-    elif mnemonico == "nAeB":
-        return 'F'
-    else:
-        return 'X'
+def procurar_mnemonico(string):
+    tabela = {
+        "zeroL": "0",
+        "umL": "1",
+        "copiaA": "2",
+        "copiaB": "3",
+        "nA": "4",
+        "nB": "5",
+        "AenB": "6",
+        "nAeB": "7",
+        "AxB": "8",
+        "nAxnB": "9",
+        "nAxnBn": "A",
+        "AeB": "B",
+        "AeBn": "C",
+        "AoBn": "D",
+        "AoB": "E",
+        "nAonBn": "F"
+    }
+    return tabela.get(string, "Erro")
 
 
 def main():
-    x = "0"
-    y = "0"
-    w = "0"
-    A = "0"
-    B = "0"
-
     try:
-        with open("testeula.ula", "r") as arquivo, open("testeula.hex", "w") as arquivoHex:
-            for linha in arquivo:
+        with open("testeula.ula", "r") as arq, open("testeula.hex", "w") as saida:
+            X = ""
+            Y = ""
+            for linha in arq:
                 linha = linha.strip()
-                if linha.startswith("X="):
-                    x = linha[2:].rstrip(';')
-                elif linha.startswith("Y="):
-                    y = linha[2:].rstrip(';')
-                elif linha.startswith("W="):
-                    mnemonico = linha[2:].rstrip(';')
-                    A = x
-                    B = y
-                    w = expressao(mnemonico)
-                    arquivoHex.write(f"{A}{B}{w}\n")
+
+                if linha == "inicio:":
+                    continue
+
+                elif linha.startswith("A"):
+                    X = linha.split("=")[1].replace(";", "")
+
+                elif linha.startswith("B"):
+                    Y = linha.split("=")[1].replace(";", "")
+
+                elif linha.startswith("W"):
+                    if X == "" or Y == "":
+                        print("Erro, X ou Y não foram definidos antes da primeira operação.")
+                    else:
+                        W = linha.split("=")[1].replace(";", "")
+                        try:
+                            x = int(X)
+                            y = int(Y)
+                            saida.write(f"{x:X}{y:X}{procurar_mnemonico(W)}\n")
+                        except Exception as e:
+                            print("Erro ao converter X ou Y para inteiro:", e)
+
+                elif linha == "fim.":
+                    break
 
     except Exception as e:
-        print(f"Erro ao processar o arquivo: {e}")
-        return 1
-
-    return 0
+        print("Erro ao processar os arquivos:", e)
 
 
 if __name__ == "__main__":
